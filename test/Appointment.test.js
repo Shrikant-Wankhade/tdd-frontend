@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { act } from "react-dom/test-utils";
-import { Appointment } from "../src/Appointment";
+import {
+  Appointment,
+  AppointmentsDayView,
+} from "../src/Appointment";
 
 //core principle of TDD is always do the simplest thing to pass the test
 //We could rephrase this as always do the simplest thing to fix the error you’re working on
@@ -15,7 +18,7 @@ import { Appointment } from "../src/Appointment";
 
 /*
   A great test is not just good but is also the following:
-
+ 
  Short
  Descriptive
  Independent of other tests
@@ -75,3 +78,134 @@ describe("Appointment",()=>{
 
 //Building matchers that are specific to your own project 
 //is an essential part of writing clear, concise tests.
+
+
+
+
+
+describe("AppointmentsDayView", () => {
+
+  const today = new Date();
+        
+  const twoAppointments = [
+    {
+      startsAt: today.setHours(12, 0),
+      customer: { firstName: "Ashley" },
+    },
+    {
+      startsAt: today.setHours(13, 0),
+      customer: { firstName: "Jordan" },
+    },
+  ];
+
+      let container;
+  
+      beforeEach(() => {
+  
+      container = document.createElement("div");
+  
+      document.body.replaceChildren(container);
+  
+    });
+  
+    const render = (component) =>
+  
+    act(() =>
+  
+      ReactDOM.createRoot(container).render(component)
+    );
+  
+      it("renders an ol element to display appointments", () => {
+        render(<AppointmentsDayView appointments={[]} />);
+        const listElement = document.querySelector("ol");
+        expect(listElement).not.toBeNull();
+      });
+
+      it("renders an li for each appointment", () => {
+        render(
+          <AppointmentsDayView
+              appointments={twoAppointments}
+          />
+        );
+        const listChildren =
+        document.querySelectorAll("ol > li");
+          expect(listChildren).toHaveLength(2);
+      });
+
+
+
+      it("renders the time of each appointment", () => { 
+            render(
+              <AppointmentsDayView
+                appointments={twoAppointments}
+              />
+            );
+            const listChildren =
+              document.querySelectorAll("li");  
+            expect(listChildren[0].textContent).toEqual(
+              "12:00"
+            );
+            expect(listChildren[1].textContent).toEqual(
+              "13:00"
+            );
+          
+      });
+          
+
+      it("initially shows a message saying there are no appointments today", () => {
+            render(<AppointmentsDayView appointments={[]} />);
+            expect(document.body.textContent).toContain(   
+              "There are no appointments scheduled for today."          
+            );        
+      });
+
+
+      it("has a button element in each li", () => {
+        render(
+          <AppointmentsDayView
+            appointments={twoAppointments}
+          />
+        );
+        const buttons =
+         document.querySelectorAll("li > button");
+        expect(buttons).toHaveLength(2);
+        expect(buttons[0].type).toEqual("button");
+      });
+
+
+      it("renders another appointment when selected", () => {
+        render(
+          <AppointmentsDayView
+            appointments={twoAppointments}
+          />
+        );
+        const buttons =
+         document.querySelectorAll("li > button");
+        expect(buttons).toHaveLength(2);
+        expect(buttons[0].type).toEqual("button");
+      });
+
+      it("renders another appointment when selected", () => {
+        render(
+          <AppointmentsDayView    
+            appointments={twoAppointments}
+          />
+        );
+        const button =
+          document.querySelectorAll("button")[1];
+        act(() => button.click());
+        expect(document.body.textContent).toContain(
+          "Jordan"
+        );
+      });
+  })
+
+
+
+
+
+
+
+
+
+
